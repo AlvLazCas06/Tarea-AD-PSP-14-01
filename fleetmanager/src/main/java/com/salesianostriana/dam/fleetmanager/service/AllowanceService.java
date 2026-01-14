@@ -23,6 +23,9 @@ public class AllowanceService {
         if (vehicle.getStatus() == Status.ASSIGNED) {
             throw new RuntimeException("No se puede tener un vehiculo que ya esta asignado.");
         }
+        if (allowanceRepository.findByDriver_Id(idDriver).getLast() == null) {
+
+        }
         allowance.setDriver(driver);
         allowance.setVehicle(vehicle);
         return allowanceRepository.save(allowance);
