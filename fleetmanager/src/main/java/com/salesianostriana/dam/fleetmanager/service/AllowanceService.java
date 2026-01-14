@@ -9,6 +9,8 @@ import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalDateTime;
+
 @Service
 @RequiredArgsConstructor
 public class AllowanceService {
@@ -20,14 +22,25 @@ public class AllowanceService {
     public Allowance createAllowance(Allowance allowance, Long idVehicle, Long idDriver) throws EntityNotFoundException {
         Vehicle vehicle = vehicleService.getVehicleById(idVehicle);
         Driver driver = driverService.getDriverById(idDriver);
-        if (vehicle.getStatus() == Status.ASSIGNED) {
+        if (vehicle.getStatus() != Status.AVAILABLE
+                || allowanceRepository.findByDriver_Id(idDriver).getLast() == null) {
             throw new RuntimeException("No se puede tener un vehiculo que ya esta asignado.");
         }
-        if (allowanceRepository.findByDriver_Id(idDriver).getLast() == null) {
-
-        }
         allowance.setDriver(driver);
-        allowance.setVehicle(vehicle);
+        vehicle.addAllowance(allowance);
+        return allowanceRepository.save(allowance);
+    }
+
+    public Allowance closeAllowance(Long idAllowance, Long idVehicle, Long idDriver) {
+        Allowance allowance = allowanceRepository.findById(idAllowance)
+                .orElseThrow(() -> new EntityNotFoundException("La asignación con el id: %d, no existe.".formatted(idAllowance)));
+        Vehicle vehicle = vehicleService.getVehicleById(idVehicle);
+        if (vehicle.getStatus() != Status.ASSIGNED
+                || allowanceRepository.findByDriver_Id(idDriver).getLast() != null) {
+            throw new RuntimeException();
+        }
+        vehicle.changeToAvailable();
+        allowance.setFinishDate(LocalDateTime.now());
         return allowanceRepository.save(allowance);
     }
 

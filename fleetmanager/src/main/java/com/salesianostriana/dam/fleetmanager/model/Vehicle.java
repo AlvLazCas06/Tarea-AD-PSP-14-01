@@ -55,4 +55,26 @@ public class Vehicle {
         return this instanceof HibernateProxy ? ((HibernateProxy) this).getHibernateLazyInitializer().getPersistentClass().hashCode() : getClass().hashCode();
     }
 
+    public void changeToAvailable() {
+        this.setStatus(Status.AVAILABLE);
+    }
+
+    public void changeToUnderMaintenance() {
+        this.setStatus(Status.UNDER_MAINTENANCE);
+    }
+
+    public void changeCurrentKm(int Km) {
+        this.setCurrentKm(Km);
+    }
+
+    public void addMaintenance(Maintenance maintenance) {
+        this.getMaintenances().add(maintenance);
+        maintenance.setVehicle(this);
+    }
+
+    public void addAllowance(Allowance allowance) {
+        this.getAllowances().add(allowance);
+        allowance.setVehicle(this);
+    }
+
 }

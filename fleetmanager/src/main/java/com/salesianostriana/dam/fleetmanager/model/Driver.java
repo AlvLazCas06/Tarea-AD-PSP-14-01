@@ -1,5 +1,6 @@
 package com.salesianostriana.dam.fleetmanager.model;
 
+import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.Id;
@@ -23,6 +24,7 @@ public class Driver {
 
     private String name;
 
+    @Column(unique = true)
     private String email;
 
     @Override
