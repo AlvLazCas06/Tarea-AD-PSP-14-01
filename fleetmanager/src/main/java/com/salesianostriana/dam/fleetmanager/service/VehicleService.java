@@ -1,8 +1,9 @@
 package com.salesianostriana.dam.fleetmanager.service;
 
+import com.salesianostriana.dam.fleetmanager.exception.BadRequestException;
+import com.salesianostriana.dam.fleetmanager.exception.VehicleNotFoundException;
 import com.salesianostriana.dam.fleetmanager.model.Vehicle;
 import com.salesianostriana.dam.fleetmanager.repository.VehicleRepository;
-import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -16,21 +17,21 @@ public class VehicleService {
 
     public Vehicle createVehicle(Vehicle vehicle) {
         if (vehicleRepository.existsByPlate(vehicle.getPlate())) {
-            throw new IllegalArgumentException("Ya existe un vehiculo con esa matricula.");
+            throw new BadRequestException();
         }
         return vehicleRepository.save(vehicle);
     }
 
     public Vehicle getVehicleById(Long id) {
         Vehicle vehicle = vehicleRepository.findById(id)
-                .orElseThrow(() -> new EntityNotFoundException("El vehiculo con el id: %d, no existe".formatted(id)));
+                .orElseThrow(() -> new VehicleNotFoundException(id));
         return vehicle;
     }
 
     public Page<Vehicle> getAllVehicles(Pageable pageable) {
         Page<Vehicle> vehicles = vehicleRepository.findAll(pageable);
         if (vehicles.isEmpty()) {
-            throw new RuntimeException();
+            throw new VehicleNotFoundException();
         }
         return vehicles;
     }

@@ -1,5 +1,6 @@
 package com.salesianostriana.dam.fleetmanager.service;
 
+import com.salesianostriana.dam.fleetmanager.exception.BadRequestException;
 import com.salesianostriana.dam.fleetmanager.model.Driver;
 import com.salesianostriana.dam.fleetmanager.repository.DriverRepository;
 import jakarta.persistence.EntityNotFoundException;
@@ -16,7 +17,7 @@ public class DriverService {
 
     public Driver createDriver(Driver driver) {
         if (driverRepository.existsByEmail(driver.getEmail())) {
-            throw new IllegalArgumentException();
+            throw new BadRequestException();
         }
         return driverRepository.save(driver);
     }
