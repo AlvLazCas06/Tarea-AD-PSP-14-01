@@ -1,0 +1,28 @@
+package com.salesianostriana.dam.fleetmanager.service;
+
+import com.salesianostriana.dam.fleetmanager.model.Vehicle;
+import com.salesianostriana.dam.fleetmanager.repository.VehicleRepository;
+import jakarta.persistence.EntityNotFoundException;
+import lombok.RequiredArgsConstructor;
+import org.springframework.stereotype.Service;
+
+@Service
+@RequiredArgsConstructor
+public class VehicleService {
+
+    private final VehicleRepository vehicleRepository;
+
+    public Vehicle createVehicle(Vehicle vehicle) {
+        if (vehicleRepository.existsByPlate(vehicle.getPlate())) {
+            throw new IllegalArgumentException("Ya existe un vehiculo con esa matricula.");
+        }
+        return vehicleRepository.save(vehicle);
+    }
+
+    public Vehicle getVehicleById(Long id) {
+        Vehicle vehicle = vehicleRepository.findById(id)
+                .orElseThrow(() -> new EntityNotFoundException("El vehiculo con el id: %d, no existe".formatted(id)));
+        return vehicle;
+    }
+
+}
