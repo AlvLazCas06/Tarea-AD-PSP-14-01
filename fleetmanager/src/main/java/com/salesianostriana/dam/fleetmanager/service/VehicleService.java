@@ -4,6 +4,8 @@ import com.salesianostriana.dam.fleetmanager.model.Vehicle;
 import com.salesianostriana.dam.fleetmanager.repository.VehicleRepository;
 import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 @Service
@@ -23,6 +25,14 @@ public class VehicleService {
         Vehicle vehicle = vehicleRepository.findById(id)
                 .orElseThrow(() -> new EntityNotFoundException("El vehiculo con el id: %d, no existe".formatted(id)));
         return vehicle;
+    }
+
+    public Page<Vehicle> getAllVehicles(Pageable pageable) {
+        Page<Vehicle> vehicles = vehicleRepository.findAll(pageable);
+        if (vehicles.isEmpty()) {
+            throw new RuntimeException();
+        }
+        return vehicles;
     }
 
 }
