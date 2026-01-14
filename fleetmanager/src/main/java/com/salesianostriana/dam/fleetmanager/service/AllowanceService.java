@@ -1,5 +1,6 @@
 package com.salesianostriana.dam.fleetmanager.service;
 
+import com.salesianostriana.dam.fleetmanager.dto.CreateAllowanceRequest;
 import com.salesianostriana.dam.fleetmanager.model.Allowance;
 import com.salesianostriana.dam.fleetmanager.model.Driver;
 import com.salesianostriana.dam.fleetmanager.model.Status;
@@ -19,11 +20,13 @@ public class AllowanceService {
     private final VehicleService vehicleService;
     private final DriverService driverService;
 
-    public Allowance createAllowance(Allowance allowance, Long idVehicle, Long idDriver) throws EntityNotFoundException {
-        Vehicle vehicle = vehicleService.getVehicleById(idVehicle);
-        Driver driver = driverService.getDriverById(idDriver);
+    public Allowance createAllowance(CreateAllowanceRequest dto) {
+        Allowance allowance = dto.toEntity();
+        Vehicle vehicle = vehicleService.getVehicleById(dto.idVehicle());
+        Driver driver = driverService.getDriverById(dto.idDriver());
         if (vehicle.getStatus() != Status.AVAILABLE
-                || allowanceRepository.findByDriver_Id(idDriver).getLast() == null) {
+                || (!allowanceRepository.findByDriver_Id(dto.idDriver()).isEmpty()
+                && allowanceRepository.findByDriver_Id(dto.idDriver()).getLast() == null)) {
             throw new RuntimeException("No se puede tener un vehiculo que ya esta asignado.");
         }
         allowance.setDriver(driver);

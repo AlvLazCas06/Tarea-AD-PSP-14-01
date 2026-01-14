@@ -46,4 +46,9 @@ public class Workshop {
         return this instanceof HibernateProxy ? ((HibernateProxy) this).getHibernateLazyInitializer().getPersistentClass().hashCode() : getClass().hashCode();
     }
 
+    public void addMaintenance(Maintenance maintenance) {
+        this.getMaintenances().add(maintenance);
+        maintenance.setWorkshop(this);
+    }
+
 }
