@@ -1,6 +1,8 @@
 package com.salesianostriana.dam.fleetmanager.service;
 
 import com.salesianostriana.dam.fleetmanager.dto.CreateMaintenanceRequest;
+import com.salesianostriana.dam.fleetmanager.exception.BadRequestException;
+import com.salesianostriana.dam.fleetmanager.exception.VehicleNotFoundException;
 import com.salesianostriana.dam.fleetmanager.model.Maintenance;
 import com.salesianostriana.dam.fleetmanager.model.Status;
 import com.salesianostriana.dam.fleetmanager.model.Vehicle;
@@ -17,7 +19,12 @@ public class MaintenanceService {
 
     public Maintenance createMaintenance(CreateMaintenanceRequest dto) {
         Maintenance maintenance = dto.toEntity();
-        Vehicle vehicle = vehicleService.getVehicleById(dto.idVehicle());
+        Vehicle vehicle;
+        try {
+            vehicle = vehicleService.getVehicleById(dto.idVehicle());
+        } catch (VehicleNotFoundException e) {
+            throw new BadRequestException();
+        }
         if (vehicle.getStatus() != Status.AVAILABLE
                 || maintenance.getKmInRevision() < vehicle.getCurrentKm()) {
             throw new IllegalArgumentException();
